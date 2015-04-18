@@ -9,6 +9,7 @@ var del = require('del');
 var $ = require('gulp-load-plugins')();
 var browserify = require('browserify');
 var watchify = require('watchify');
+var bower = require('gulp-bower');
 var source = require('vinyl-source-stream'),
 
     sourceFile = './app/scripts/app.js',
@@ -22,7 +23,7 @@ var reload = browserSync.reload;
 // Styles
 gulp.task('styles', ['sass'  ]);
 
-gulp.task('sass', function() {
+gulp.task('sass', ['bowerInstall'], function() {
     return gulp.src(['app/styles/**/*.scss', 'app/styles/**/*.css'])
         .pipe($.rubySass({
             style: 'expanded',
@@ -100,7 +101,7 @@ gulp.task('images', function() {
 });
 
 // Fonts
-gulp.task('fonts', function() {
+gulp.task('fonts', ['bowerInstall'], function() {
     return gulp.src(require('main-bower-files')({
             filter: '**/*.{eot,svg,ttf,woff,woff2}'
         }).concat('app/fonts/**/*'))
@@ -113,8 +114,13 @@ gulp.task('clean', function(cb) {
     cb(del.sync(['dist/styles', 'dist/scripts', 'dist/images']));
 });
 
+//Bower
+gulp.task('bowerInstall', function() {
+  return bower();
+});
+
 // Bundle
-gulp.task('bundle', ['styles', 'scripts', 'bower'], function() {
+gulp.task('bundle', ['styles', 'scripts'], function() {
     return gulp.src('./app/*.html')
         .pipe($.useref.assets())
         .pipe($.useref.restore())
@@ -122,7 +128,7 @@ gulp.task('bundle', ['styles', 'scripts', 'bower'], function() {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('buildBundle', ['styles', 'buildScripts', 'bower'], function() {
+gulp.task('buildBundle', ['styles', 'buildScripts'], function() {
     return gulp.src('./app/*.html')
         .pipe($.useref.assets())
         .pipe($.useref.restore())
@@ -130,14 +136,6 @@ gulp.task('buildBundle', ['styles', 'buildScripts', 'bower'], function() {
         .pipe(gulp.dest('dist'));
 });
 
-// Bower helper
-gulp.task('bower', function() {
-    gulp.src('app/bower_components/**/*.js', {
-            base: 'app/bower_components'
-        })
-        .pipe(gulp.dest('dist/bower_components/'));
-
-});
 
 gulp.task('json', function() {
     gulp.src('app/scripts/json/**/*.json', {
@@ -174,7 +172,7 @@ gulp.task('watch', ['html', 'fonts', 'bundle'], function() {
 
     gulp.watch(['app/styles/**/*.scss', 'app/styles/**/*.css'], ['styles', reload]);
 
-    
+
 
     // Watch image files
     gulp.watch('app/images/**/*', reload);
