@@ -37,7 +37,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "postinstall": "gulp"
+    "postinstall": "./node_modules/.bin/gulp"
   },
   "jest": {
     "scriptPreprocessor": "<rootDir>/preprocessor.js",
