@@ -36,6 +36,10 @@ var DateSelector = React.createClass({
   },
 
   handleDateSelect: function(day, modifiers, event) {
+    if (this.modifiers().disabled(day)) {
+      return;
+    }
+
     React.findDOMNode(this.refs.all).checked = false;
     React.findDOMNode(this.refs.month).checked = false;
     React.findDOMNode(this.refs.week).checked = false;
@@ -130,24 +134,6 @@ var DateSelector = React.createClass({
     return (
       <div className='vertical-center'>
         <form className='form-inline'>
-          <div className='form-group overlay'>
-            <input className='form-control'
-              id='from'
-              ref='fromInput'
-              value={fromDateString}
-              onFocus={this.handleOnFocus}
-              placeholder="from..."
-            />
-          </div>
-          <div className='form-group overlay'>
-            <input className='form-control'
-              id='to'
-              ref='toInput'
-              value={toDateString}
-              onFocus={this.handleOnFocus}
-              placeholder='to...'
-            />
-          </div>
           <div className='checkbox'>
             <label>
               <input type='checkbox'
@@ -171,6 +157,24 @@ var DateSelector = React.createClass({
                 onChange={this.onWeekChange}
               /> Last Week
             </label>
+          </div>
+          <div className='form-group overlay'>
+            <input className='form-control'
+              id='from'
+              ref='fromInput'
+              value={fromDateString}
+              onFocus={this.handleOnFocus}
+              placeholder="from..."
+            />
+          </div>
+          <div className='form-group overlay'>
+            <input className='form-control'
+              id='to'
+              ref='toInput'
+              value={toDateString}
+              onFocus={this.handleOnFocus}
+              placeholder='to...'
+            />
           </div>
           {this.state.showDatePicker ? <div className='dismiss' onClick={this.dismiss}></div> : null}
           <div>
