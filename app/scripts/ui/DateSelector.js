@@ -36,6 +36,10 @@ var DateSelector = React.createClass({
   },
 
   handleDateSelect: function(day, modifiers, event) {
+    React.findDOMNode(this.refs.all).checked = false;
+    React.findDOMNode(this.refs.month).checked = false;
+    React.findDOMNode(this.refs.week).checked = false;
+
     if (this.state.currentId == 'from') {
       this.props.fromDateSelected(day);
       this.setState({

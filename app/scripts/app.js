@@ -31,7 +31,7 @@ var App = React.createClass({
           <button type='button'
             id='add-viz'
             className='btn btn-lg btn-success text-center'
-            onClick={this.addViz}>Add Viz
+            onClick={this.addViz}>Compare
           </button>
           <div className='row'>
             {vizs}
