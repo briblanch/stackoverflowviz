@@ -36,6 +36,7 @@
     "node": "0.10.26"
   },
   "scripts": {
+    "preinstall": "bundle",
     "start": "node server.js",
     "postinstall": "./node_modules/.bin/gulp"
   },
