@@ -1,5 +1,6 @@
 var React = window.React = require('react');
 var moment = window.moment = require('moment');
+var d3 = window.d3 = require('d3');
 
 var DataViz = require('./ui/DataViz');
 

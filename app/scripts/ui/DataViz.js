@@ -1,4 +1,5 @@
 var DateSelector = require('./DateSelector');
+var Canvas = require('./Canvas');
 var api = require('../api');
 
 var DataViz = React.createClass({
@@ -30,7 +31,7 @@ var DataViz = React.createClass({
 
   getDataForDates: function() {
     if (this.state.fromDate && this.state.toDate) {
-      api.getTagsForDates(this.state.fromDate, this.state.toDate, function(result) {
+      api.getDataForDates(this.state.fromDate, this.state.toDate, function(result) {
         this.setState({
           data: result
         })
@@ -44,9 +45,9 @@ var DataViz = React.createClass({
       toDate: null
     });
 
-    api.getAllTimeTags(function(result) {
+    api.getDataForAllTime(function(result) {
       this.setState({
-        data:result
+        data: result
       })
     }.bind(this));
   },
@@ -63,6 +64,7 @@ var DataViz = React.createClass({
           toDate={this.state.toDate}
           allTimeSelected={this.getDataForAllTime}
         />
+        <Canvas key={this.props.key} data={this.state.data} />
       </div>
     )
   }
