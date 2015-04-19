@@ -27,7 +27,7 @@ var App = React.createClass({
     return (
       <div className='container-fluid'>
         <div className='text-center'>
-          <h3 className='heading'>Explore popular tags for a date range</h3>
+          <h1 className='heading'>Explore popular tags for a date range</h1>
           <button type='button'
             id='add-viz'
             className='btn btn-lg btn-success text-center'
