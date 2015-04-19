@@ -1,6 +1,7 @@
 var margin = 20;
 var diameter = 960;
 var format = d3.format(',d');
+var chartContainer;
 var svg;
 var circles;
 var labels;
@@ -19,15 +20,15 @@ var pack = d3.layout.pack()
   .value(function(d) { return d.size; });
 
 exports.create = function(el) {
-  var chartContainer = d3.select(el);
+  chartContainer = d3.select(el);
   chartContainer.style('width', diameter + 'px')
-              .style('height', diameter + 'px');
+                .style('height', diameter + 'px');
 
   svg = chartContainer.append('svg')
-  .attr('width', '100%')
-  .attr('height', '100%')
-  .append('g')
-  .attr('transform', 'translate(' + diameter / 2 + ',' + diameter / 2 + ')');
+                      .attr('width', '100%')
+                      .attr('height', '100%')
+                      .append('g')
+                      .attr('transform', 'translate(' + diameter / 2 + ',' + diameter / 2 + ')');
 }
 
 function dataKey(d) {
@@ -120,9 +121,8 @@ exports.update = function(data) {
   // Delete old labels
   labels.exit().remove();
 
-  var chart = d3.select('.bubbleChart');
-  chart.on('click', null);
-  chart.on('click', function() { zoom(root); });
+  chartContainer.on('click', null);
+  chartContainer.on('click', function() { zoom(root); });
 
   zoomTo([root.x, root.y, root.r * 2 + margin], false);
 }
