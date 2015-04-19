@@ -1,14 +1,12 @@
 var margin = 20;
 var diameter = 960;
 var format = d3.format(',d');
-var svg
+var svg;
 var circles;
 var labels;
 var focus;
 var nodesData;
 var view;
-
-var dataCache = {};
 
 var color = d3.scale.linear()
   .domain([-1, 5])
@@ -87,7 +85,8 @@ function zoomTo(v, inTransition) {
   }
 }
 
-exports.update = function(root) {
+exports.update = function(data) {
+  var root = $.extend(true, {}, data);
   focus = root;
   nodesData = pack.nodes(root);
   view = null;
@@ -121,9 +120,9 @@ exports.update = function(root) {
   // Delete old labels
   labels.exit().remove();
 
-  var body = d3.select('body');
-  body.on('click', null);
-  body.on('click', function() { zoom(root); });
+  var chart = d3.select('.bubbleChart');
+  chart.on('click', null);
+  chart.on('click', function() { zoom(root); });
 
   zoomTo([root.x, root.y, root.r * 2 + margin], false);
 }
