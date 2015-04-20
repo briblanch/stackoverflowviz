@@ -134,25 +134,25 @@ var DateSelector = React.createClass({
     return (
       <div className='vertical-center'>
         <form className='form-inline'>
-          <div className='checkbox'>
+          <div className='radio'>
             <label>
-              <input type='checkbox'
+              <input type='radio'
                 ref='all'
                 onChange={this.onAllChange}
               /> All Time
             </label>
           </div>
-          <div className='checkbox'>
+          <div className='radio'>
             <label>
-              <input type='checkbox'
+              <input type='radio'
                 ref='month'
                 onChange={this.onMonthChange}
               /> Last Month
             </label>
           </div>
-          <div className='checkbox'>
+          <div className='radio'>
             <label>
-              <input type='checkbox'
+              <input type='radio'
                 ref='week'
                 onChange={this.onWeekChange}
               /> Last Week
