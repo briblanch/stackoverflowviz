@@ -1,137 +1,109 @@
 var Chart = function() {
-  var margin = 20;
-  var diameter = 960;
+  var diameter = 750;
   var format = d3.format(',d');
+  var color = d3.scale.linear()
+                .domain([0, 50])
+                .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+                .interpolate(d3.interpolateHcl)
+                ;
+
+  var bubble = d3.layout.pack()
+                        .sort(null)
+                        .size([diameter, diameter])
+                        .padding(1.5)
+                        ;
+
   var chartContainer;
   var svg;
-  var circles;
-  var labels;
-  var focus;
-  var nodesData;
-  var view;
 
-  var color = d3.scale.linear()
-    .domain([-1, 5])
-    .range(['hsl(152,80%,80%)', 'hsl(228,30%,40%)'])
-    .interpolate(d3.interpolateHcl);
+  d3.selection.prototype.moveToFront = function() {
+    return this.each(function() {
+      this.parentNode.appendChild(this);
+    });
+  };
 
-  var pack = d3.layout.pack()
-    .padding(2)
-    .size([diameter - margin, diameter - margin])
-    .value(function(d) { return d.size; });
-
-  var create = function(el) {
+  function create(el) {
     chartContainer = d3.select(el);
     chartContainer.style('width', diameter + 'px')
-                  .style('height', diameter + 'px');
+                  .style('height', diameter + 'px')
+                  ;
 
     svg = chartContainer.append('svg')
                         .attr('width', '100%')
                         .attr('height', '100%')
-                        .append('g')
-                        .attr('transform', 'translate(' + diameter / 2 + ',' + diameter / 2 + ')');
+                        .attr('class', 'bubble')
+                        ;
   }
 
-  function dataKey(d) {
-    var parents = [];
-    var it = d.parent;
-    while (it) {
-      parents.unshift(it.name);
-      it = it.parent;
-    }
-    return (parents.length > 0) ? parents.join('>>') + '>>' + d.name : d.name;
+  function formatTagDataPoint(dataPoint) {
+    return {
+      name: dataPoint.name,
+      value: dataPoint.children.map(function(x) { return x.size; }).reduce(function(a, b) { return a + b; }, 0)
+    };
   }
 
-  function zoom(d) {
-    var focus0 = focus;
-    focus = d;
+  function update(data) {
+    var tags = {children: data.children.map(formatTagDataPoint)};
+    var node = svg.selectAll('.node')
+      .data(bubble.nodes(tags).filter(function(d) { return !d.children; }),
+          function(d) { return d.name; });
 
-    var transition = svg.transition()
-      .duration(750)
-      .tween('zoom', function(d) {
-        var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
-        return function(t) { zoomTo(i(t), true); };
-      });
+    // Add new nodes
+    var newNodes = node.enter()
+                       .append('g')
+                       .attr('class', 'node')
+                       .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
 
-    transition
-      .selectAll('text')
-      .filter(function(d) { return d.parent === focus || this.style.display === 'inline'; })
-      .style('fill-opacity', function(d) { return d.parent === focus ? 1 : 0; })
-      .each('start', function(d) { if (d.parent === focus) this.style.display = 'inline'; })
-      .each('end', function(d) { if (d.parent !== focus) this.style.display = 'none'; });
-  }
+    newNodes.append('title')
+            .text(function(d) { return d.name + ': ' + format(d.value);  });
 
-  function zoomTo(v, inTransition) {
-    var k = diameter / v[2];
-    view = v;
-    function transform(d) {
-      return 'translate(' + (d.x - v[0]) * k + ',' + (d.y - v[1]) * k + ')';
-    }
-    function delay(d, i) {
-      return (1 - (nodesData.length - i) / nodesData.length) * 250;
-    }
-    if (!inTransition) {
-      labels.transition()
-             .delay(delay)
-             .attr('transform', transform)
-             ;
-      circles.transition()
-             .delay(delay)
-             .attr('transform', transform)
-             .attr('r', function(d) { return d.r * k; })
-             ;
-    } else {
-      labels.attr('transform', transform);
-      circles.attr('transform', transform)
-             .attr('r', function(d) { return d.r * k; });
-    }
-  }
+    newNodes.append('circle')
+            .attr('class', 'bubble')
+            .attr('r', 0)
+            .style('fill', function(d, i) { return color(i); })
+            .style('stroke', function(d, i) { return d3.rgb(color(i)).darker(1); })
+            .transition()
+            .delay(function(d, i) { return (tags.children.length - i) / tags.children.length * 250; })
+            .attr('r', function(d) { return d.r; });
 
-  var update = function(data) {
-    var root = $.extend(true, {}, data);
-    focus = root;
-    nodesData = pack.nodes(root);
-    view = null;
+    newNodes.append('text')
+            .attr('dy', '.3em')
+            .style('text-anchor', 'middle')
+            .text(function(d) { return d.name.substring(0, d.r / 4); })
+            .style('opacity', 0)
+            .transition()
+            .delay(function(d, i) { return (tags.children.length - i) / tags.children.length * 250; })
+            .style('opacity', 1)
+            ;
 
-    circles = svg.selectAll('circle')
-      .data(nodesData, dataKey);
-    // Add new circles
-    circles
-      .enter()
-      .append('circle')
-      .attr('class', function(d) { return d.parent ? d.children ? 'node' : 'node node--leaf' : 'node node--root'; })
-      .style('fill', function(d) { return d.children ? color(d.depth) : null; })
-      .on('click', function(d) {
-        if (focus !== d && d.children) zoom(d);
-        d3.event.stopPropagation();
-      })
-      .append('title')
-      .text(function(d) { return d.name + ': ' + format(d.value); })
-      ;
-    // Delete old circles
-    circles.exit().remove();
+    // Update existing nodes
+    node.transition()
+        .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
 
-    labels = svg.selectAll('text')
-      .data(nodesData, dataKey);
-    // Add new labels
-    labels.enter().append('text')
-      .attr('class', 'label')
-      .style('fill-opacity', function(d) { return d.parent === root ? 1 : 0; })
-      .style('display', function(d) { return d.parent === root ? 'inline' : 'none'; })
-      .text(function(d) { return d.name; });
-    // Delete old labels
-    labels.exit().remove();
+    node.select('title')
+        .text(function(d) { return d.name + ': ' + format(d.value);  });
 
-    chartContainer.on('click', null);
-    chartContainer.on('click', function() { zoom(root); });
+    node.select('circle')
+        .transition()
+        .attr('r', function(d) { return d.r; });
 
-    zoomTo([root.x, root.y, root.r * 2 + margin], false);
+    node.select('text')
+        .text(function(d) { return d.name.substring(0, d.r / 4); });
+
+    svg.selectAll('.node')
+       .on('mouseover', null)
+       .on('mouseover', function() {
+         d3.select(this).moveToFront();
+       });
+
+    // Remove any unneeded nodes
+    node.exit().remove();
   }
 
   return {
     create: create,
     update: update
-  }
-}
+  };
+};
 
 module.exports = Chart;

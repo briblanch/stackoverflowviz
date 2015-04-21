@@ -3,6 +3,7 @@ var moment = window.moment = require('moment');
 var d3 = window.d3 = require('d3');
 
 var DataViz = require('./ui/DataViz');
+var BarChartCanvas = require('./ui/BarChartCanvas');
 
 var mountNode = document.getElementById('app');
 
@@ -36,6 +37,9 @@ var App = React.createClass({
           </button>
           <div className='row'>
             {vizs}
+          </div>
+          <div className='row'>
+            <BarChartCanvas  />
           </div>
         </div>
       </div>
