@@ -60,7 +60,7 @@ var BarChart = function() {
     });
 
     // For testing:
-    chart.load({columns: sampleData.map(formatForC3)});
+    // chart.load({columns: sampleData.map(formatForC3)});
     updateTitle('Test Title');
   }
 
@@ -80,8 +80,7 @@ var BarChart = function() {
   }
 
   function update(data) {
-    // Uncomment once data is working!
-    //chart.load({columns: sampleData.map(formatForC3)});
+    chart.load({columns: data.map(formatForC3)});
 
     //updateTitle(newTitle);
   }

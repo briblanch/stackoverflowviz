@@ -23,59 +23,30 @@ module.exports = {
     });
   },
 
-  buildData: function(tags, result, callback) {
-    tags.map(function(tag) {
-      this.getRelatedTags(tag, function(relatedTags) {
-        result.children.push({
-          name: tag.name,
-          children: relatedTags.map(function(tagObj) {
-            return {
-              name: tagObj.name,
-              size: tagObj.count
-            }
-          })
-        });
-
-        if (result.children.length == tags.length) {
-          callback(result);
-        }
-      });
-    }.bind(this));
-  },
-
   getDataForAllTime: function(callback) {
-    var result = {
-      name: 'root',
-      children: []
-    };
-
     this.getAllTimeTags(function(tags) {
-      this.buildData(tags, result, callback);
-    }.bind(this));
+      callback(tags);
+    });
 
   },
 
   getDataForDates: function(from, to, callback) {
-    var result = {
-      name: 'root',
-      children: []
-    };
-
     this.getTagsForDates(from, to, function(tags) {
-      this.buildData(tags, result, callback);
-    }.bind(this));
+      callback(tags);
+    });
   },
 
   getTagsForDates: function(from, to, callback) {
     var url = this.baseUrl + 'tags';
     var queryParams = {
-      pagesize: 25,
+      pagesize: 100,
       order: 'desc',
       sort: 'popular',
       fromdate: from.unix(),
       todate: to.unix(),
       site: 'stackoverflow',
-      key: this.key
+      key: this.key,
+      filter: '!-.G.68phH_FI'
     };
 
     $.get(url, queryParams, function(result) {
@@ -86,11 +57,12 @@ module.exports = {
   getAllTimeTags: function(callback) {
     var url = this.baseUrl + 'tags';
     var queryParams = {
-      pagesize: 25,
+      pagesize: 100,
       order: 'desc',
       sort: 'popular',
       site: 'stackoverflow',
-      key: this.key
+      key: this.key,
+      filter: '!-.G.68phH_FI'
     };
 
     $.get(url, queryParams, function(result) {

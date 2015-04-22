@@ -1,17 +1,18 @@
 var Chart = function() {
   var diameter = 750;
+  var width;
+  var height;
   var format = d3.format(',d');
-  var color = d3.scale.linear()
-                .domain([0, 50])
-                .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
-                .interpolate(d3.interpolateHcl)
-                ;
+  var color;
 
-  var bubble = d3.layout.pack()
+  function getPackLayout() {
+    var bubble = d3.layout.pack()
                         .sort(null)
                         .size([diameter, diameter])
                         .padding(1.5)
                         ;
+    return bubble;
+  }
 
   var chartContainer;
   var svg;
@@ -22,28 +23,42 @@ var Chart = function() {
     });
   };
 
-  function create(el) {
-    chartContainer = d3.select(el);
-    chartContainer.style('width', diameter + 'px')
-                  .style('height', diameter + 'px')
-                  ;
+  function updateColor(size) {
+    color = d3.scale.linear()
+                .domain([0, size])
+                .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+                .interpolate(d3.interpolateHcl);
+  }
 
+  function updateCanvasSize(el) {
+    width = $(el).width();
+    height = $(el).height();
+    diameter = height;
+  }
+
+  function create(el) {
+    updateCanvasSize(el);
+    chartContainer = d3.select(el);
+    
     svg = chartContainer.append('svg')
-                        .attr('width', '100%')
-                        .attr('height', '100%')
+                        .attr('width', height)
+                        .attr('height', height)
                         .attr('class', 'bubble')
+                        .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');                       
                         ;
   }
 
   function formatTagDataPoint(dataPoint) {
     return {
       name: dataPoint.name,
-      value: dataPoint.children.map(function(x) { return x.size; }).reduce(function(a, b) { return a + b; }, 0)
+      value: dataPoint.count
     };
   }
 
   function update(data) {
-    var tags = {children: data.children.map(formatTagDataPoint)};
+    updateColor(data.length);
+    var bubble = getPackLayout();
+    var tags = {children: data.map(formatTagDataPoint)};
     var node = svg.selectAll('.node')
       .data(bubble.nodes(tags).filter(function(d) { return !d.children; }),
           function(d) { return d.name; });

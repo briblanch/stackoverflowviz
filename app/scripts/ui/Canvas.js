@@ -17,7 +17,7 @@ var Canvas = React.createClass({
 
   render: function() {
     return (
-      <div className='bubbleChart'></div>
+      <div className='bubble-chart'></div>
     )
   }
 });
