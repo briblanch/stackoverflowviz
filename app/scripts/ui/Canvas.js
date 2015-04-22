@@ -5,13 +5,13 @@ var Canvas = React.createClass({
     this.chart = new Chart();
 
     var el = this.getDOMNode();
-    this.chart.create(el);
+    // this.chart.create(el);
   },
 
   componentDidUpdate: function() {
     var el = this.getDOMNode();
     if (this.props.data) {
-      this.chart.update(this.props.data);
+      // this.chart.update(this.props.data);
     }
   },
 

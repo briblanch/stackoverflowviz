@@ -35,6 +35,8 @@ var DataViz = React.createClass({
         this.setState({
           data: result
         })
+
+        this.props.setData(this.state.fromDate, result);
       }.bind(this));
     }
   },
