@@ -81,7 +81,7 @@ gulp.task('buildScripts', function() {
 
 
 // HTML
-gulp.task('html', function() {
+gulp.task('html', ['bowerInstall'], function() {
     return gulp.src('app/*.html')
         .pipe($.useref())
         .pipe(gulp.dest('dist'))
