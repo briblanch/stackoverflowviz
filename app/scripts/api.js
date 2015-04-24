@@ -1,3 +1,23 @@
+function calculateTagPopularities(questionData) {
+  var tagOccurrences = {};
+
+  questionData.forEach(function(question) {
+    question.tags.forEach(function(tag) {
+      if (!(tag in tagOccurrences)) {
+        tagOccurrences[tag] = 0;
+      }
+      ++tagOccurrences[tag];
+    });
+  });
+
+  return d3.entries(tagOccurrences).map(function(tagPopularity) {
+    return {
+      name: tagPopularity.key,
+      count: tagPopularity.value,
+    };
+  });
+}
+
 module.exports = {
   baseUrl: 'https://api.stackexchange.com/2.2/',
 
@@ -36,7 +56,7 @@ module.exports = {
     });
   },
 
-  getTagsForDates: function(from, to, callback) {
+  /*getTagsForDates: function(from, to, callback) {
     var url = this.baseUrl + 'tags';
     var queryParams = {
       pagesize: 100,
@@ -51,7 +71,35 @@ module.exports = {
 
     $.get(url, queryParams, function(result) {
       callback(result.items);
-    })
+    });
+  },*/
+
+  getTagsForDates: function(from, to, callback) {
+    var url = this.baseUrl + 'questions';
+    var queryParams = {
+      pagesize: 100,
+      order: 'desc',
+      sort: 'votes',
+      fromdate: from.unix(),
+      todate: to.unix(),
+      site: 'stackoverflow',
+      key: this.key,
+      filter: '!--KJAUrxFwJI'
+    };
+
+    var pagesReceived = 0;
+    var results = [];
+    for (var page = 1; page <= 5; ++page) {
+      queryParams.page = page;
+      $.get(url, queryParams, function(result) {
+        ++pagesReceived;
+        results = results.concat(result.items);
+
+        if (pagesReceived === 5) {
+          callback(calculateTagPopularities(results));
+        }
+      });
+    }
   },
 
   getAllTimeTags: function(callback) {
@@ -67,6 +115,6 @@ module.exports = {
 
     $.get(url, queryParams, function(result) {
       callback(result.items);
-    })
+    });
   }
 }

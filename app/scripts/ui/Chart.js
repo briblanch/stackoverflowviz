@@ -7,10 +7,10 @@ var Chart = function() {
 
   function getPackLayout() {
     var bubble = d3.layout.pack()
-                        .sort(null)
-                        .size([diameter, diameter])
-                        .padding(1.5)
-                        ;
+                   .sort(null)
+                   .size([diameter, diameter])
+                   .padding(1.5)
+                   ;
     return bubble;
   }
 
@@ -39,12 +39,12 @@ var Chart = function() {
   function create(el) {
     updateCanvasSize(el);
     chartContainer = d3.select(el);
-    
+
     svg = chartContainer.append('svg')
                         .attr('width', height)
                         .attr('height', height)
                         .attr('class', 'bubble')
-                        .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');                       
+                        .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
                         ;
   }
 
