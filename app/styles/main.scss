@@ -123,8 +123,11 @@ body {
 }
 
 text {
-  font: 14px "Avenir Next", sans-serif;
+  font-size: 14px;
   pointer-events: none;
+}
+
+.tag-label {
 }
 
 circle {

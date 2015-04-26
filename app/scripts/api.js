@@ -1,3 +1,19 @@
+function getTagsDataFromQuestions(url, queryParams, numOfPages, callback) {
+  var pagesReceived = 0;
+  var results = [];
+  for (var page = 1; page <= numOfPages; ++page) {
+    queryParams.page = page;
+    $.get(url, queryParams, function(result) {
+      ++pagesReceived;
+      results = results.concat(result.items);
+
+      if (pagesReceived === numOfPages) {
+        callback(calculateTagPopularities(results));
+      }
+    });
+  }
+}
+
 function calculateTagPopularities(questionData) {
   var tagOccurrences = {};
 
@@ -10,12 +26,15 @@ function calculateTagPopularities(questionData) {
     });
   });
 
-  return d3.entries(tagOccurrences).map(function(tagPopularity) {
-    return {
-      name: tagPopularity.key,
-      count: tagPopularity.value,
-    };
-  });
+  return d3.entries(tagOccurrences)
+           .sort(function(a, b) { return b.value - a.value; })
+           .slice(0, 100)
+           .map(function(tagPopularity) {
+             return {
+               name: tagPopularity.key,
+               count: tagPopularity.value,
+             };
+           });
 }
 
 module.exports = {
@@ -23,11 +42,13 @@ module.exports = {
 
   key: 'JRYkoF0Yf1oSTLoC37194Q((',
 
+  maxNumOfQuestionPages: 5,
+
   formatStackExchangeTagObj: function(tagObj) {
     return {
       name: tagObj.name,
       size: tagObj.count
-    }
+    };
   },
 
   getRelatedTags: function(tag, callback) {
@@ -56,24 +77,6 @@ module.exports = {
     });
   },
 
-  /*getTagsForDates: function(from, to, callback) {
-    var url = this.baseUrl + 'tags';
-    var queryParams = {
-      pagesize: 100,
-      order: 'desc',
-      sort: 'popular',
-      fromdate: from.unix(),
-      todate: to.unix(),
-      site: 'stackoverflow',
-      key: this.key,
-      filter: '!-.G.68phH_FI'
-    };
-
-    $.get(url, queryParams, function(result) {
-      callback(result.items);
-    });
-  },*/
-
   getTagsForDates: function(from, to, callback) {
     var url = this.baseUrl + 'questions';
     var queryParams = {
@@ -87,34 +90,20 @@ module.exports = {
       filter: '!--KJAUrxFwJI'
     };
 
-    var pagesReceived = 0;
-    var results = [];
-    for (var page = 1; page <= 5; ++page) {
-      queryParams.page = page;
-      $.get(url, queryParams, function(result) {
-        ++pagesReceived;
-        results = results.concat(result.items);
-
-        if (pagesReceived === 5) {
-          callback(calculateTagPopularities(results));
-        }
-      });
-    }
+    getTagsDataFromQuestions(url, queryParams, this.maxNumOfQuestionPages, callback);
   },
 
   getAllTimeTags: function(callback) {
-    var url = this.baseUrl + 'tags';
+    var url = this.baseUrl + 'questions';
     var queryParams = {
       pagesize: 100,
       order: 'desc',
-      sort: 'popular',
+      sort: 'votes',
       site: 'stackoverflow',
       key: this.key,
-      filter: '!-.G.68phH_FI'
+      filter: '!--KJAUrxFwJI'
     };
 
-    $.get(url, queryParams, function(result) {
-      callback(result.items);
-    });
+    getTagsDataFromQuestions(url, queryParams, this.maxNumOfQuestionPages, callback);
   }
-}
+};

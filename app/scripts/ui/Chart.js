@@ -23,10 +23,11 @@ var Chart = function() {
     });
   };
 
-  function updateColor(size) {
+  function updateColor(data) {
+    var countGetter = function(d) { return d.count; };
     color = d3.scale.linear()
-                .domain([0, size])
-                .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+                .domain([d3.min(data, countGetter), d3.max(data, countGetter)])
+                .range(['hsl(120,39%,80%)', 'hsl(120,39%,50%)'])
                 .interpolate(d3.interpolateHcl);
   }
 
@@ -56,7 +57,7 @@ var Chart = function() {
   }
 
   function update(data) {
-    updateColor(data.length);
+    updateColor(data);
     var bubble = getPackLayout();
     var tags = {children: data.map(formatTagDataPoint)};
     var node = svg.selectAll('.node')
@@ -75,13 +76,14 @@ var Chart = function() {
     newNodes.append('circle')
             .attr('class', 'bubble')
             .attr('r', 0)
-            .style('fill', function(d, i) { return color(i); })
-            .style('stroke', function(d, i) { return d3.rgb(color(i)).darker(1); })
+            .style('fill', function(d, i) { return color(d.value); })
+            .style('stroke', function(d, i) { return d3.rgb(color(d.value)).darker(1); })
             .transition()
             .delay(function(d, i) { return (tags.children.length - i) / tags.children.length * 250; })
             .attr('r', function(d) { return d.r; });
 
     newNodes.append('text')
+            .attr('class', 'tag-label')
             .attr('dy', '.3em')
             .style('text-anchor', 'middle')
             .text(function(d) { return d.name.substring(0, d.r / 4); })
@@ -100,7 +102,10 @@ var Chart = function() {
 
     node.select('circle')
         .transition()
-        .attr('r', function(d) { return d.r; });
+        .attr('r', function(d) { return d.r; })
+        .style('fill', function(d, i) { return color(d.value); })
+        .style('stroke', function(d, i) { return d3.rgb(color(d.value)).darker(1); })
+        ;
 
     node.select('text')
         .text(function(d) { return d.name.substring(0, d.r / 4); });
