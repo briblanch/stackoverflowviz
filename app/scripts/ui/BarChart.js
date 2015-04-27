@@ -80,7 +80,11 @@ var BarChart = function() {
   }
 
   function update(data) {
-    chart.load({columns: data.map(formatForC3)});
+    chart.load({
+        columns: data.map(formatForC3).sort(function(a, b) {
+          return Math.abs(b[1]) - Math.abs(a[1]);
+        }).slice(0, 10)
+    });
 
     //updateTitle(newTitle);
   }
