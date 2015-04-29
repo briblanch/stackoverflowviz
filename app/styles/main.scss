@@ -144,9 +144,13 @@ circle:hover {
 }
 
 .bubble-chart {
-	height: 80vh;
+  height: 80vh;
 }
 
 .bar-chart {
-	padding-bottom: 60vh;
+  padding-bottom: 60vh;
+}
+
+.bar-chart svg {
+  height: 50vh;
 }
