@@ -59,7 +59,7 @@ var BarChart = function() {
     title.enter()
          .append('text')
          .attr('class', 'title')
-         .attr('x', chartContainer.select('svg').node().getBoundingClientRect().width / 2)
+         .attr('x', svg.node().getBoundingClientRect().width / 2)
          .attr('y', 16)
          .attr('text-anchor', 'middle')
          .style('font-size', '1.4em')
