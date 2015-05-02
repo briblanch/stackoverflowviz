@@ -43,6 +43,7 @@ var BarChart = function() {
 
       chartContainer.append('svg')
                     .datum([])
+                    .attr('class', 'bar')
                     .call(chart)
                     ;
 

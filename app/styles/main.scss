@@ -143,12 +143,18 @@ circle:hover {
   cursor: pointer;
 }
 
+.bar {
+  height: 100%;
+  width: 100%;
+  display:block;
+}
+
 .bubble-chart {
   height: 80vh;
 }
 
 .bar-chart {
-  padding-bottom: 60vh;
+  padding-bottom: 20px;
 }
 
 .bar-chart svg {
