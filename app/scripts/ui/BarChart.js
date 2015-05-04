@@ -42,7 +42,6 @@ var BarChart = function() {
            .tickFormat(percentageFormat);
 
       chartContainer.append('svg')
-                    .datum([])
                     .attr('class', 'bar')
                     .call(chart)
                     ;
