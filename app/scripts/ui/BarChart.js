@@ -27,10 +27,10 @@ var BarChart = function() {
     chartContainer = d3.select(el);
     nv.addGraph(function() {
       chart = nv.models.discreteBarChart()
-                    .margin({top: 10, right: 10, bottom: 10, left: 85})
+                    .margin({top: 10, right: 10, bottom: 30, left: 85})
                     .x(function(d) { return d.label;  })
                     .y(function(d) { return d.value;  })
-                    .staggerLabels(true)
+                    .staggerLabels(false)
                     .tooltips(true)
                     .showValues(true)
                     .transitionDuration(350)
@@ -42,7 +42,6 @@ var BarChart = function() {
            .tickFormat(percentageFormat);
 
       chartContainer.append('svg')
-                    .datum([])
                     .attr('class', 'bar')
                     .call(chart)
                     ;
