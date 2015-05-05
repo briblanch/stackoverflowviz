@@ -73,7 +73,7 @@ var BarChart = function() {
     nv.addGraph(function() {
       chartContainer.select('svg')
                     .datum([{
-                      values: data.map(formatForNvd3).sort(function(a, b) {
+                      values: data.data.map(formatForNvd3).sort(function(a, b) {
                         return Math.abs(b.value) - Math.abs(a.value);
                       }).slice(0, 10)
                     }])
@@ -81,7 +81,10 @@ var BarChart = function() {
                     ;
       return chart;
     });
-    //setTimeout(function() { updateTitle(newTitle); }, 1000);
+
+    var title = 'Percent Difference from ' + data.fromDate + ' to ' + data.toDate;
+
+    setTimeout(function() { updateTitle(title); }, 1000);
   }
 
   return {

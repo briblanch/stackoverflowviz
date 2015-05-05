@@ -26,9 +26,9 @@ var App = React.createClass({
     }
   },
 
-  setViz1Data: function(startDate, data) {
+  setViz1Data: function(startDate, endDate, data) {
     var newData = {
-      date: startDate,
+      date: [startDate, endDate],
       data: data
     };
 
@@ -37,9 +37,9 @@ var App = React.createClass({
     });
   },
 
-  setViz2Data: function(startDate, data) {
+  setViz2Data: function(startDate, endDate, data) {
     var newData = {
-      date: startDate,
+      date: [startDate, endDate],
       data: data
     };
 
@@ -55,15 +55,29 @@ var App = React.createClass({
   },
 
   computeCommonData: function() {
-    var result = [];    
+    var result = {
+      data: []
+    };
     var data1IsEarlier;
 
-    if (!this.state.viz1Data.date) {
+    if (!this.state.viz1Data.date[0]) {
       data1IsEarlier = true;
-    } else if (!this.state.viz2Data.date) {
+      result.fromDate = 'All Time';
+      result.toDate = this.state.viz2Data.date[0].format('MMM Do, YYYY') + ' - ' + this.state.viz2Data.date[1].format('MMM Do, YYYY');
+    } else if (this.state.viz2Data.date && !this.state.viz2Data.date[0]) {
       data1IsEarlier = false;
+      result.fromDate = 'All Time';
+      result.toDate = this.state.viz2Data.date[0].format('MMM Do, YYYY') + ' - ' + this.state.viz2Data.date[1].format('MMM Do, YYYY');
     } else {
-      data1IsEarlier = this.state.viz1Data.date.diff(this.state.viz2Data.date, 'day') <= 0;
+      data1IsEarlier = this.state.viz1Data.date[0].diff(this.state.viz2Data.date[0], 'day') <= 0;
+
+      if (data1IsEarlier) {
+        result.fromDate = this.state.viz1Data.date[0].format('MMM Do, YYYY') + ' - ' + this.state.viz1Data.date[1].format('MMM Do, YYYY');
+        result.toDate = this.state.viz2Data.date[0].format('MMM Do, YYYY') + ' - ' + this.state.viz2Data.date[1].format('MMM Do, YYYY');
+      } else {
+        result.fromDate = this.state.viz2Data.date[0].format('MMM Do, YYYY') + ' - ' + this.state.viz2Data.date[1].format('MMM Do, YYYY');
+        result.toDate = this.state.viz1Data.date[0].format('MMM Do, YYYY') + ' - ' + this.state.viz1Data.date[1].format('MMM Do, YYYY');
+      }
     }
 
     var data1 = this.state.viz1Data.data;
@@ -85,7 +99,7 @@ var App = React.createClass({
 
       var commonData = {
         name: commonNames[i]
-      }
+      };
 
       if (data1IsEarlier) {
         commonData.values = [value1.count, value2.count];
@@ -93,7 +107,7 @@ var App = React.createClass({
         commonData.values = [value2.count, value1.count];
       }
 
-      result.push(commonData);
+      result.data.push(commonData);
     }
 
     this.setState({
@@ -125,7 +139,7 @@ var App = React.createClass({
             {vizs}
           </div>
           <div className='row'>
-            {this.state.commonData.length > 0 ? <BarChartCanvas data={this.state.commonData} /> : null}
+            {this.state.commonData.data != null && this.state.commonData.data.length > 0 ? <BarChartCanvas data={this.state.commonData} /> : null}
           </div>
         </div>
       </div>

@@ -6,14 +6,14 @@ var BarChartCanvas = React.createClass({
 
     var el = this.getDOMNode();
     this.chart.create(el);
-    if (this.props.data.length) {
+    if (this.props.data.data.length) {
       this.chart.update(this.props.data)
     }
   },
 
   componentDidUpdate: function() {
     var el = this.getDOMNode();
-    if (this.props.data.length) {
+    if (this.props.data.data.length) {
       this.chart.update(this.props.data);
     }
   },

@@ -36,7 +36,7 @@ var DataViz = React.createClass({
           data: result
         })
 
-        this.props.setData(this.state.fromDate, result);
+        this.props.setData(this.state.fromDate, this.state.toDate, result);
       }.bind(this));
     }
   },
@@ -52,7 +52,7 @@ var DataViz = React.createClass({
         data: result
       })
 
-      this.props.setData(null, result);
+      this.props.setData(null, null, result);
     }.bind(this));
   },
 
